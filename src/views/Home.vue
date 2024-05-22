@@ -1,27 +1,23 @@
 <template>
-  <div class="flex p-8 justify-center">
-    <input
-      type="text"
-      class="rounded border-2 border-gray-200 w-full"
-      placeholder="Search for a Meal"
-    />
-
-    <div class="flex justify-center mt-2 gap-2">
-      <router-link
-        :to="{ name: 'byLetter', params: { letter } }"
-        v-for="letter of letters"
-        :key="letter"
-      >
-        {{ letter }}
-      </router-link>
-    </div>
+  <div class="p-6 pb-0 text-blue-500 flex items-center justify-center">
+    <h1 class="text-4xl font-bold mb-4">Random Meals</h1>
   </div>
+  <Meals :meals="meals" />
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import store from '../store';
+import Meals from '../components/Meals.vue';
+import axiosClient from '../axiosClient.js';
 
-const meals = computed(() => store.state.meals);
-const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const meals = ref([]);
+
+onMounted(async () => {
+  for (let i = 0; i < 10; i++) {
+    axiosClient
+      .get(`random.php`)
+      .then(({ data }) => meals.value.push(data.meals[0]));
+  }
+});
 </script>

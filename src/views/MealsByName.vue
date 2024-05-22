@@ -1,0 +1,47 @@
+<template>
+  <div class="p-8 pb-0">
+    <h1
+      class="text-4xl font-bold mb-4 text-blue-500 flex items-center justify-center"
+    >
+      Search Meals by Name
+    </h1>
+  </div>
+  <div class="px-8 pb-3">
+    <input
+      type="text"
+      v-model="keyword"
+      class="rounded-lg border-2 bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500 mb-5 w-full p-3"
+      placeholder="Search for Meals"
+      @change="searchMeals"
+    />
+  </div>
+
+  <Meals :meals="meals" />
+</template>
+
+<script setup>
+import { computed } from '@vue/reactivity';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import store from '../store';
+import Meals from '../components/Meals.vue';
+
+const route = useRoute();
+const keyword = ref('');
+const meals = computed(() => store.state.searchedMeals);
+
+function searchMeals() {
+  if (keyword.value) {
+    store.dispatch('searchMeals', keyword.value);
+  } else {
+    store.commit('setSearchedMeals', []);
+  }
+}
+
+onMounted(() => {
+  keyword.value = route.params.name;
+  if (keyword.value) {
+    searchMeals();
+  }
+});
+</script>
